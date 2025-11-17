@@ -34,7 +34,10 @@ export default class Menue extends Component {
   render() {
     return (
       <SafeAreaView style={styles.container} edges={["top", "bottom"]}>
-        <Header />
+        <Header 
+        headerTitle="Aharri strategy"
+        showIcon={true}
+        />
 
         <ScrollView
           contentContainerStyle={{ paddingBottom: 40 }}
@@ -224,11 +227,12 @@ const styles = StyleSheet.create({
   },
   headerText: {
     fontSize: SCREEN_WIDTH * 0.055 * scale,
-    fontWeight: "600",
+    fontWeight: "700",
     textAlign: "center",
-    color: "#fff",
+    color: "#597a0dff",
     opacity: 0.5,
     marginBottom: SCREEN_HEIGHT * 0.01 * scale,
+    marginTop: SCREEN_HEIGHT * 0.03 * scale,
   },
   subHeaderText: {
     fontSize: SCREEN_WIDTH * 0.04 * scale,

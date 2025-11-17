@@ -11,22 +11,17 @@ import {
   Dimensions,
   Image,
   ScrollView,
-  SafeAreaView,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+
 import { MaterialIcons, Ionicons } from "@expo/vector-icons";
-import { Camera } from "expo-camera";
+import { Camera } from "expo-camera"; // <-- unified Camera
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { fonts } from "../../Style/Theme";
 
-// Import your existing mockData.json
 const mockData = require("./mockData.json");
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
-
-let QrReader;
-if (Platform.OS === "web") {
-  QrReader = require("react-qr-reader").QrReader;
-}
 
 export default class ScanningScreen extends Component {
   state = {
@@ -37,20 +32,18 @@ export default class ScanningScreen extends Component {
     result: null,
   };
 
-  cameraRef = null;
+  cameraRef = null; // needed for Camera
   scanLineAnim = new Animated.Value(0);
 
   async componentDidMount() {
-    if (Platform.OS !== "web") {
-      const { status } = await Camera.requestCameraPermissionsAsync();
-      this.setState({ hasPermission: status === "granted" });
-    }
+    const { status } = await Camera.requestCameraPermissionsAsync();
+    this.setState({ hasPermission: status === "granted" });
   }
 
   startScan = () => {
-    if (Platform.OS !== "web" && this.state.hasPermission === null) return;
+    if (this.state.hasPermission === null) return;
     this.setState({ scanning: true, qrData: null, result: null }, () => {
-      if (Platform.OS !== "web") this.startScanAnimation();
+      this.startScanAnimation();
     });
   };
 
@@ -95,7 +88,7 @@ export default class ScanningScreen extends Component {
     try {
       const storedScans = await AsyncStorage.getItem("scannedDrugs");
       const scans = storedScans ? JSON.parse(storedScans) : [];
-      scans.unshift(result); // latest scan on top
+      scans.unshift(result);
       await AsyncStorage.setItem("scannedDrugs", JSON.stringify(scans));
     } catch (err) {
       console.error("Error saving scanned drug:", err);
@@ -105,14 +98,7 @@ export default class ScanningScreen extends Component {
     this.props.navigation.navigate("Scan", { scannedResult: result });
   };
 
-  handleScanWeb = (data) => {
-    if (data) {
-      this.setState({ qrData: data, scanning: false });
-      this.verifyDrug(data);
-    }
-  };
-
-  handleMobileScan = ({ data }) => {
+  handleScan = ({ type, data }) => {
     this.stopScan();
     this.setState({ qrData: data });
     this.verifyDrug(data);
@@ -128,7 +114,6 @@ export default class ScanningScreen extends Component {
         const file = event.target.files[0];
         if (!file) return;
 
-        // simulate QR code detection for mock demo
         const code = prompt("Enter QR code value from mock data for demo:");
         if (code) this.verifyDrug(code);
       };
@@ -176,7 +161,7 @@ export default class ScanningScreen extends Component {
   };
 
   render() {
-    const { hasPermission, scanning, verifying } = this.state;
+    const { scanning, verifying } = this.state;
     const scanLineTranslate = this.scanLineAnim.interpolate({
       inputRange: [0, 1],
       outputRange: [0, 250],
@@ -184,7 +169,6 @@ export default class ScanningScreen extends Component {
 
     return (
       <SafeAreaView style={styles.container}>
-        {/* Header */}
         <View style={styles.header}>
           <TouchableOpacity
             onPress={() => this.props.navigation.goBack()}
@@ -195,7 +179,6 @@ export default class ScanningScreen extends Component {
           <Text style={styles.headerTitle}>Scan QR Code</Text>
         </View>
 
-        {/* Main Content */}
         <ScrollView contentContainerStyle={styles.content}>
           <Text style={[styles.contentHeadText, fonts.bold]}>
             Position QR Code
@@ -204,24 +187,13 @@ export default class ScanningScreen extends Component {
             Align the QR code within the frame to verify the drug
           </Text>
 
-          {Platform.OS === "web" && scanning && (
-            <View style={styles.cameraContainer}>
-              <QrReader
-                onResult={(result) => this.handleScanWeb(result?.text)}
-                constraints={{ facingMode: "environment" }}
-                style={{ width: "100%", height: 300 }}
-              />
-              <Text style={styles.scanningText}>Scanning...</Text>
-            </View>
-          )}
-
-          {Platform.OS !== "web" && scanning && hasPermission && (
+          {scanning && (
             <View style={styles.cameraContainer}>
               <Camera
                 style={styles.camera}
                 type={Camera.Constants.Type.back}
+                onBarCodeScanned={this.handleScan}
                 ref={(ref) => (this.cameraRef = ref)}
-                onBarCodeScanned={this.handleMobileScan}
               />
               <View style={styles.overlay}>
                 <View style={styles.frameOuter} />
@@ -238,6 +210,10 @@ export default class ScanningScreen extends Component {
                       size={70}
                       color="#00FF00"
                     />
+                  </View>
+                  {/* Scanning Sign Overlay */}
+                  <View style={styles.scanningSign}>
+                    <Text style={styles.scanningSignText}>Scanning...</Text>
                   </View>
                 </View>
               </View>
@@ -274,10 +250,9 @@ export default class ScanningScreen extends Component {
 
           {!scanning && !verifying && this.state.result && this.renderResult()}
 
-          <View style={{ height: 140 }} /> {/* Space for bottom tips */}
+          <View style={{ height: 140 }} />
         </ScrollView>
 
-        {/* Scanning Tips pinned at bottom */}
         <View style={styles.tipsContainer}>
           <Text style={styles.tipsTitle}>📸 Scanning Tips</Text>
           <Text style={styles.tipsText}>
@@ -298,6 +273,7 @@ export default class ScanningScreen extends Component {
   }
 }
 
+// Styles unchanged except added scanningSign styles
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#fff" },
   header: {
@@ -349,6 +325,22 @@ const styles = StyleSheet.create({
     alignItems: "center",
     zIndex: 3,
   },
+  scanningSign: {
+    position: 'absolute',
+    bottom: 10,
+    width: '100%',
+    alignItems: 'center',
+    zIndex: 4,
+  },
+  scanningSignText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#00FF00',
+    backgroundColor: 'rgba(0,0,0,0.4)',
+    paddingHorizontal: 10,
+    paddingVertical: 2,
+    borderRadius: 5,
+  },
   scanInstruction: { marginTop: 10, color: "#075f5f", fontWeight: "bold", textAlign: "center" },
   scanningText: { textAlign: "center", marginTop: 5, fontWeight: "bold", color: "#075f5f" },
   scanButton: { width: "80%", flexDirection: "row", justifyContent: "center", alignItems: "center", gap: 10, marginTop: 10, padding: 10, backgroundColor: "#0fa3a3ff", borderRadius: 15 },
@@ -358,7 +350,6 @@ const styles = StyleSheet.create({
   choose: { marginTop: 20 },
   resultContainer: { marginTop: 20, width: "90%", padding: 15, borderRadius: 12, backgroundColor: "#f0fcfcff", borderWidth: 1, borderColor: "#cceaea", alignItems: "center" },
   productImage: { width: 100, height: 100, marginBottom: 10 },
-  productName: { fontSize: 16, fontWeight: "bold", marginBottom: 5 },
   tipsContainer: { 
     position: "absolute", 
     bottom: 15, 
@@ -367,7 +358,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#f0fcfcff", 
     borderTopWidth: 1, 
     borderColor: "#cceaea", 
-    padding: 15, 
+    padding: 15,
     borderRadius: 12,
   },
   tipsTitle: { fontSize: 14, fontWeight: "bold", color: "#075f5f", marginBottom: 8 },

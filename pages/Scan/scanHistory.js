@@ -1,11 +1,11 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 
-export default function Profile() {
+export default function ScanHistory() {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Profile</Text>
-      <Text style={styles.text}>Your user details will appear here.</Text>
+      <Text style={styles.title}>Scan History</Text>
+      <Text style={styles.text}>All previously scanned drugs will appear here.</Text>
     </View>
   );
 }

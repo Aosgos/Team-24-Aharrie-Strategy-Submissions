@@ -51,7 +51,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { StyleSheet, Text, View } from "react-native";
-
+import MainDrawer from "./component/MainDrawer";
 import SplashScreen from "./pages/Auth/SplashScreen";
 import Login from "./pages/Auth/Login";
 import Signup from "./pages/Auth/Signup";
@@ -60,6 +60,13 @@ import RoleSelect from "./pages/Roles/RoleSelect";
 import Scan from "./pages/Scan/Scan";
 import Verify from "./pages/Verification/Verify";
 import ScanningScreen from "./pages/Scan/ScanningScreen";
+import Profile from "./pages/Profile/Profile";
+import scanHistory from "./pages/Scan/scanHistory";
+import Settings from "./pages/Settings/Setings";
+import Support from "./Services/Support";
+import LegalPrivacy from "./Services/LegalPrivacy";
+
+
 
 global.__DEV_MODE__ = true; // still building without backend
 
@@ -88,11 +95,17 @@ export default function App() {
           <Stack.Screen name="Splash" component={SplashScreen} />
           <Stack.Screen name="Login" component={Login} />
           <Stack.Screen name="Signup" component={Signup} />
-          <Stack.Screen name="Home" component={SafeHome} />
+          <Stack.Screen name="Home" component={MainDrawer} />
           <Stack.Screen name="RoleSelect" component={RoleSelect} />
           <Stack.Screen name="Scan" component={Scan} />
           <Stack.Screen name="Verify" component={Verify} />
           <Stack.Screen name="ScanningScreen" component={ScanningScreen} />
+          <Stack.Screen name="Profile" component={Profile} />
+          <Stack.Screen name="ScanHistory" component={scanHistory} />
+          <Stack.Screen name="Settings" component={Settings} />
+          <Stack.Screen name="Support" component={Support} />
+          <Stack.Screen name="LegalPrivacy" component={LegalPrivacy} />
+
         </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaProvider>

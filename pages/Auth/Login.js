@@ -39,12 +39,13 @@ export default class Login extends Component {
 
     return (
       <SafeAreaView style={styles.container}>
-        <View style={styles.headerWrapper}>
-          <Header
-            showText={true}
-            headerText="Secure access to your health verification platform"
-          />
-        </View>
+        {/* Header */}
+        <Header
+          showText={true}
+          showIcon={false} // optional icon
+          headerTitle="Aharri Strategy"
+          headerText="Secure access to your health verification platform"
+        />
 
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -138,7 +139,7 @@ export default class Login extends Component {
                   <View style={styles.line} />
                 </View>
 
-                {/* Scanning & PassKey Buttons */}
+                {/* Biometric & Passkey */}
                 <View style={styles.buttonRow}>
                   <TouchableOpacity
                     style={styles.iconButton}
@@ -161,7 +162,7 @@ export default class Login extends Component {
                   <Text style={styles.Demo}>Demo: patient@example.com / password 123</Text>
                 </View>
 
-                {/* Signup Link */}
+                {/* Signup */}
                 <TouchableOpacity
                   style={styles.RegisterButton}
                   onPress={() => this.props.navigation.navigate("Signup")}
@@ -169,6 +170,7 @@ export default class Login extends Component {
                   <Text style={styles.buttonText}>Don't have account? </Text>
                   <Text style={styles.DownBtn}>Signup</Text>
                 </TouchableOpacity>
+
               </View>
             </View>
           </ScrollView>
@@ -180,29 +182,25 @@ export default class Login extends Component {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#fff' },
-  headerWrapper: {
-    width: '100%',
-    zIndex: 10,
-    position: 'absolute',
-    top: 0,
-    left: 0,
-  },
+
   scrollContainer: {
     flexGrow: 1,
     justifyContent: 'center',
-    paddingTop: height * 0.25,
     paddingBottom: height * 0.05,
   },
+
   centerContainer: {
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: width * 0.05,
   },
+
   LoginContainer: {
     width: '100%',
     maxWidth: 400,
     backgroundColor: colors.background,
     padding: 20 * scale,
+    marginTop: 25,
     borderRadius: 20,
     ...Platform.select({
       ios: { shadowColor: "#000", shadowOffset: { width: 0, height: 12 }, shadowOpacity: 0.45, shadowRadius: 15 },
@@ -210,14 +208,15 @@ const styles = StyleSheet.create({
       web: { boxShadow: "0px 20px 50px rgba(0,0,0,0.6)" },
     }),
   },
+
   TextTittle: {
     textAlign: "center",
     marginBottom: 15,
     fontSize: PixelRatio.getFontScale() * 18,
   },
+
   label: { fontSize: PixelRatio.getFontScale() * 14, marginBottom: 5 },
-  
-  // ⬇️ Updated input field styles to match Signup page
+
   inputWrapper: {
     flexDirection: 'row',
     alignItems: 'center',

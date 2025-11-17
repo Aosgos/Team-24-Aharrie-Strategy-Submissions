@@ -63,10 +63,13 @@ export default class RoleSelect extends Component {
       <SafeAreaView style={styles.safeArea}>
         {/* Fixed Header */}
         <View style={styles.headerWrapper} onLayout={this.onHeaderLayout}>
+          
           <Header
             showBackButton={true}
             onBackPress={() => this.props.navigation.goBack()}
             showText={true}
+            headerTitle="Choose Your Role"
+            showIcon={false}
           />
         </View>
 
@@ -98,7 +101,7 @@ export default class RoleSelect extends Component {
                     color="#AFD18B"
                   />
                 </View>
-
+                <View style={styles.PatientTitle}>I'm a patient</View>
                 <Text style={[styles.Text, fonts.regular]}>
                   Verify medication for personal use, track your health journey,
                   and contribute to medication safety.
@@ -250,6 +253,15 @@ const styles = StyleSheet.create({
     paddingBottom: 50,
     alignItems: "center",
     justifyContent: "flex-start",
+  },
+  PatientTitle: {
+    fontFamily: "sans-serif",
+    fontSize: 15,
+    color: "#597a0dff",
+    textAlign: "center",
+    marginBottom: 20,
+    marginTop: 20,
+    lineHeight: 1.2,
   },
   MainContainer: { width: "90%", gap: 9 },
   childContainer: {

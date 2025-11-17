@@ -7,21 +7,21 @@ import {
   TouchableOpacity,
   StyleSheet,
   Platform,
+  Image,
   Dimensions,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Ionicons } from "@expo/vector-icons";
-import Header from "../../component/LandingPage/Header";
+import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { handleSignup } from "../../Utils/AuthUtils";
 import { colors } from "../../Style/Theme";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
+const scale = (size) => (SCREEN_WIDTH / 375) * size;
 
 export default class Signup extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      headerHeight: Platform.OS === "ios" ? 130 : 110,
       name: "",
       email: "",
       password: "",
@@ -29,13 +29,6 @@ export default class Signup extends Component {
       errors: {},
     };
   }
-
-  onHeaderLayout = (e) => {
-    const { height } = e.nativeEvent.layout;
-    if (height && height !== this.state.headerHeight) {
-      this.setState({ headerHeight: height });
-    }
-  };
 
   validateFields = () => {
     const { name, email, password } = this.state;
@@ -60,124 +53,117 @@ export default class Signup extends Component {
   };
 
   render() {
-    const {
-      headerHeight,
-      name,
-      email,
-      password,
-      showPassword,
-      errors,
-    } = this.state;
+    const { name, email, password, showPassword, errors } = this.state;
 
     return (
       <SafeAreaView style={styles.safeArea}>
-        {/* Fixed Header */}
-        <View style={styles.headerWrapper} onLayout={this.onHeaderLayout}>
-          <Header
-            showBackButton={true}
-            onBackPress={() => this.props.navigation.goBack()}
-            title="Sign Up"
-          />
+        {/* Header Logo */}
+        <View style={styles.headerWrapper}>
+          <View style={styles.logoWrapper}>
+            <Image
+              source={require("../../assets/trust-wallet-token.png")}
+              style={styles.logo}
+              resizeMode="contain"
+            />
+          </View>
+          <Text style={styles.headerTexttitle}>Drug Verification</Text>
+          <Text style={styles.headerText}>Join our secure platform</Text>
         </View>
 
         {/* Scrollable Content */}
         <ScrollView
-          contentContainerStyle={[
-            styles.scrollContainer,
-            { paddingTop: headerHeight + 8 },
-          ]}
+          contentContainerStyle={styles.scrollContainer}
           showsVerticalScrollIndicator={false}
         >
           <View style={styles.content}>
             <Text style={styles.text}>Create Your Account</Text>
-            <Text style={styles.subText}>
-              Register below to start your journey.
-            </Text>
+            <Text style={styles.texttwo}>Sign up to get started</Text>
 
             {/* Name Input */}
-            <View style={styles.inputWrapper}>
-              <TextInput
-                style={[
-                  styles.input,
-                  errors.name && { borderColor: "#ff6b6b" },
-                ]}
-                placeholder="Full Name"
-                placeholderTextColor="#A0C491"
-                value={name}
-                onChangeText={(text) => this.setState({ name: text })}
-              />
-              {errors.name && (
-                <Text style={styles.errorText}>{errors.name}</Text>
-              )}
+            <View style={styles.fieldWrapper}>
+              <Text style={styles.label}>Full Name</Text>
+              <View style={styles.inputWrapper}>
+                <MaterialIcons
+                  name="person-outline"
+                  size={24}
+                  color="black"
+                  style={styles.icon}
+                />
+                <TextInput
+                  style={[styles.input, errors.name && { borderColor: "#ff6b6b" }]}
+                  placeholder="Enter your full name"
+                  placeholderTextColor="#ced3ceff"
+                  value={name}
+                  onChangeText={(text) => this.setState({ name: text })}
+                />
+              </View>
+              {errors.name && <Text style={styles.errorText}>{errors.name}</Text>}
             </View>
 
             {/* Email Input */}
-            <View style={styles.inputWrapper}>
-              <TextInput
-                style={[
-                  styles.input,
-                  errors.email && { borderColor: "#ff6b6b" },
-                ]}
-                placeholder="Email Address"
-                placeholderTextColor="#A0C491"
-                value={email}
-                onChangeText={(text) => this.setState({ email: text })}
-                autoCapitalize="none"
-                keyboardType="email-address"
-              />
-              {errors.email && (
-                <Text style={styles.errorText}>{errors.email}</Text>
-              )}
+            <View style={styles.fieldWrapper}>
+              <Text style={styles.label}>Email</Text>
+              <View style={styles.inputWrapper}>
+                <Ionicons
+                  name="mail-outline"
+                  size={20}
+                  color={colors.textLight}
+                  style={styles.icon}
+                />
+                <TextInput
+                  style={[styles.input, errors.email && { borderColor: "#ff6b6b" }]}
+                  placeholder="Enter your email"
+                  placeholderTextColor="#ced3ceff"
+                  value={email}
+                  onChangeText={(text) => this.setState({ email: text })}
+                  autoCapitalize="none"
+                  keyboardType="email-address"
+                />
+              </View>
+              {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
             </View>
 
             {/* Password Input */}
-            <View style={styles.inputWrapper}>
-              <View style={styles.passwordContainer}>
+            <View style={styles.fieldWrapper}>
+              <Text style={styles.label}>Password</Text>
+              <View style={styles.inputWrapper}>
+                <Ionicons
+                  name="lock-closed-outline"
+                  size={20}
+                  color={colors.textLight}
+                  style={styles.icon}
+                />
                 <TextInput
-                  style={[
-                    styles.input,
-                    styles.passwordInput,
-                    errors.password && { borderColor: "#ff6b6b" },
-                  ]}
-                  placeholder="Password"
-                   placeholderTextColor="#A0C491"
+                  style={[styles.input, errors.password && { borderColor: "#ff6b6b" }]}
+                  placeholder="Create a password"
+                  placeholderTextColor="#ced3ceff"
                   secureTextEntry={!showPassword}
                   value={password}
                   onChangeText={(text) => this.setState({ password: text })}
                 />
                 <TouchableOpacity
-                  onPress={() =>
-                    this.setState({ showPassword: !showPassword })
-                  }
+                  onPress={() => this.setState({ showPassword: !showPassword })}
                   style={styles.eyeButton}
                 >
                   <Ionicons
                     name={showPassword ? "eye-off" : "eye"}
                     size={22}
-                    color="#777"
+                    color="#007bff"
                   />
                 </TouchableOpacity>
               </View>
-              {errors.password && (
-                <Text style={styles.errorText}>{errors.password}</Text>
-              )}
+              {errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
             </View>
 
             {/* Signup Button */}
-            <TouchableOpacity
-              style={styles.button}
-              onPress={this.handleSignupPress}
-            >
+            <TouchableOpacity style={styles.button} onPress={this.handleSignupPress}>
               <Text style={styles.buttonText}>Sign Up</Text>
             </TouchableOpacity>
 
             {/* Login Redirect */}
-            <TouchableOpacity
-              onPress={() => this.props.navigation.replace("Login")}
-            >
+            <TouchableOpacity onPress={() => this.props.navigation.replace("Login")}>
               <Text style={styles.loginText}>
-                Already have an account?{" "}
-                <Text style={styles.linkText}>Login</Text>
+                Already have an account? <Text style={styles.linkText}>Sign in</Text>
               </Text>
             </TouchableOpacity>
           </View>
@@ -190,77 +176,118 @@ export default class Signup extends Component {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: "#D6FFFF",
   },
   headerWrapper: {
     width: "100%",
-    backgroundColor: colors.background,
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    zIndex: 50,
-    elevation: 50,
+    alignItems: "center",
+    padding: 20,
+    paddingBottom: 30,
+    marginBottom: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "#ced3ceff",
+    borderStyle: "solid",
+    backgroundColor: "#f7f8f7ff",
+  },
+  logoWrapper: {
+    width: scale(60),
+    height: scale(60),
+    borderRadius: scale(30),
+    backgroundColor: "#D6FFFF",
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 8,
+  },
+  logo: {
+    width: scale(35),
+    height: scale(35),
+    tintColor: "#007bff",
+  },
+  headerText: {
+    fontSize: 16,
+    color: colors.textLight,
+    fontWeight: "600",
+  },
+  headerTexttitle: {
+    fontSize: 16,
+    color: "#898fc2ff",
+    fontWeight: "600",
   },
   scrollContainer: {
     paddingBottom: 50,
     alignItems: "center",
+    paddingTop: 20,
   },
   content: {
     width: "90%",
     backgroundColor: "#fff",
     borderRadius: 15,
     padding: 25,
-    marginVertical: 80,
+    marginVertical: 20,
     alignItems: "center",
     ...Platform.select({
-      ios: { shadowColor: "#000", shadowOffset: { width: 0, height: 12 }, shadowOpacity: 0.45, shadowRadius: 15 },
-      android: { elevation: 35 },
-      web: { boxShadow: "0px 20px 50px rgba(0,0,0,0.6)" },
+      ios: {
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 12 },
+        shadowOpacity: 0.4,
+        shadowRadius: 11,
+      },
+      android: { elevation: 30 },
+      web: { boxShadow: "0px 20px 50px rgba(0,0,0,0.3)" },
     }),
   },
   text: {
-    fontSize: 22,
+    fontSize: 15,
     fontWeight: "600",
-    color: "#1e8b4cff",
+    color: colors.textLight,
     textAlign: "center",
     marginBottom: 6,
   },
-  subText: {
-    fontSize: 14,
-    color: "#555",
+  texttwo: {
+    fontSize: 18,
+    fontWeight: "400",
+    color: colors.textLight,
     textAlign: "center",
-    marginBottom: 20,
+    marginBottom: 15,
   },
-  inputWrapper: {
+  fieldWrapper: {
     width: "100%",
     marginBottom: 15,
   },
-  input: {
-    width: "100%",
-    height: 50,
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 30,
-    paddingHorizontal: 15,
-    fontSize: 16,
-    backgroundColor: "#fafafa",
+  label: {
+    fontSize: 14,
+    fontWeight: "500",
+    marginBottom: 5,
+    color: "#555",
   },
-  passwordContainer: {
+  inputWrapper: {
+    width: "100%",
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#fafafa",
+    borderRadius: 10,
+    paddingHorizontal: 10,
     position: "relative",
   },
-  passwordInput: {
-    paddingRight: 45,
+  icon: {
+    marginRight: 10,
+  },
+  input: {
+    flex: 1,
+    height: 50,
+    fontSize: 16,
+    color: "#000",
+    paddingVertical: 0,
   },
   eyeButton: {
     position: "absolute",
-    right: 12,
+    right: 10,
     top: 14,
   },
   button: {
     width: "100%",
     height: 50,
-    backgroundColor: "#1e8b4cff",
+    backgroundColor: "#007bff",
     borderRadius: 20,
     alignItems: "center",
     justifyContent: "center",
@@ -275,6 +302,7 @@ const styles = StyleSheet.create({
     color: "#ff6b6b",
     fontSize: 13,
     marginTop: 4,
+    alignSelf: "flex-start",
   },
   loginText: {
     color: "#555",
@@ -282,7 +310,7 @@ const styles = StyleSheet.create({
     marginTop: 15,
   },
   linkText: {
-    color: "#A0C491",
+    color: "#007bffe7",
     fontWeight: "bold",
   },
 });
